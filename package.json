@@ -1,5 +1,5 @@
 {
-  "name": "helloworld",
+  "name": "node-ecommerce",
   "version": "1.0.0",
   "description": "Complete Node.js Guide",
   "main": "app.js",
@@ -19,5 +19,13 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.14"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Abhigyani/ecommerce-node.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Abhigyani/ecommerce-node/issues"
+  },
+  "homepage": "https://github.com/Abhigyani/ecommerce-node#readme"
 }
