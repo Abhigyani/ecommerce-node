@@ -9,7 +9,7 @@ exports.handle404 = (req, res, next) => {
      * Response to render dynamic template using HANDLEBAR TEMPLATING ENGINE.
      */
     res.status(404)
-        .render('404-handler',
+        .render('404',
             {
                 pageTitle: '404 Error',
                 mainCSS: true,

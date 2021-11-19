@@ -66,3 +66,15 @@ exports.getOrders = (req, res, next) => {
         path: '/orders'
     });  
 }
+
+
+exports.getProductDetails = (req, res, next) => {
+    const productId = req.params.productId;
+    Product.findById(productId, (product) => {
+        res.render('shop/product-detail', {
+            pageTitle: 'Product Details',
+            path: '/shop/product-details',
+            product: product
+        })
+    });
+} 
