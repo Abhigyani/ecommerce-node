@@ -16,6 +16,7 @@
                                     </h1>
                                 </header>
                                 <div class="card__image">
+                                    <!-- TODO: Remove the image hardcoding. -->
                                     <!-- <img src="<%= product.imageUrl %>" alt="<%= product.title %>"> -->
                                     <img src="https://static.toiimg.com/thumb/msid-67586673,width-800,height-600,resizemode-75,imgsize-3918697,pt-32,y_pad-40/67586673.jpg" alt="<%= product.title %>" />
                                 </div>
@@ -29,9 +30,7 @@
                                 </div>
                                 <div class="card__actions">
                                     <a href="/product-details/<%= product.id %>" class="btn">Details</a>
-                                    <form action="/add-to-cart" method="POST">
-                                        <button class="btn">Add to Cart</button>
-                                    </form>
+                                    <%- include('../includes/add-to-cart.ejs', {product: product}) %>
                                 </div>
                             </article>
                             <% } %>

@@ -16,20 +16,21 @@
     /**
      * Response to render static HTML file.
      */
-    // res.sendFile(path.join(rootDir, 'views', 'html', 'add-product.html'));
+    // res.sendFile(path.join(rootDir, 'views', 'html', 'edit-product.html'));
 
     /**
      * Response to render dynamic template using templating engine.
      * .render() method check for the template engine reference bound for this express app.
      */
-    res.render('admin/add-product',
+    res.render('admin/edit-product',
         {
             pageTitle: 'Add Product',
             path: '/admin/add-product',
             mainCSS: true,
             formsCSS: true,
             productCSS: true,
-            activeAddProduct: true
+            activeAddProduct: true,
+            editing: false
         });
 }
 
@@ -44,7 +45,29 @@ exports.postAddProduct = (req, res, next) => {
     const {title, price, description} = req.body;
     const product = new Product(title, price, description);
     product.save();
-    res.redirect('/admin/add-product');
+    res.redirect('admin/add-product');
+}
+
+
+exports.getEditProduct = (req, res, next) => {
+    const editMode = (req.query.edit) === 'true' ? true : false;
+    const productId = req.params.productId;
+    Product.findById(productId, (product) => {
+        if (!product) {
+            return res.redirect('/');
+        }
+        res.render('admin/edit-product', {
+            pageTitle: 'Edit Product',
+            path: '/admin/edit-product',
+            editing: editMode,
+            product: product
+        });
+    });
+}
+
+
+exports.postEditProduct = (req, res, next) => {
+    console.log('Edit product loaded');
 }
 
 
@@ -67,8 +90,4 @@ exports.postAddProduct = (req, res, next) => {
                 activeAddProduct: true
             });
     });
-}
-
-exports.getEditProduct = (req, res, next) => {
-    res.send('Hello');
 }

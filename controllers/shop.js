@@ -3,6 +3,9 @@
  */
 const rootDir = require('../utils/path');
 const Product = require('../models/product.model');
+const Cart = require('../models/cart.model'); 
+
+const productsInCart = [];
 
 /**
  * Middleware to fetch all the products from the storage/file and return the list to Shop page.
@@ -39,7 +42,9 @@ exports.getProducts = (req, res, next) => {
 exports.getCart = (req, res, next) => {
     res.render('shop/cart', {
         pageTitle: 'Cart',
-        path: '/cart'
+        path: '/cart',
+        products: productsInCart,
+        productsInCartCount: productsInCart.length
     });
 }
 
@@ -73,8 +78,22 @@ exports.getProductDetails = (req, res, next) => {
     Product.findById(productId, (product) => {
         res.render('shop/product-detail', {
             pageTitle: 'Product Details',
-            path: '/shop/product-details',
+            path: '/products',
             product: product
         })
     });
 } 
+
+
+exports.postCart = (req, res, next) => {
+    const productId = req.body.productId;
+    Product.findById(productId, (product) => {
+        Cart.addProduct(productId, product.price);
+         res.render('shop/cart', {
+            pageTitle: 'Cart',
+            path: '/cart',
+            products: productsInCart,
+            productsInCartCount: productsInCart.length
+        });
+    })
+}

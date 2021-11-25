@@ -17,8 +17,9 @@ const router = new Router();
 
 router.get('/', shopController.getIndex);
 router.get('/products', shopController.getProducts);
-router.get('/cart', shopController.getCart);
 router.get('/orders', shopController.getOrders);
 router.get('/product-details/:productId', shopController.getProductDetails);
+router.get('/cart', shopController.getCart);
+router.post('/cart', shopController.postCart);
 
 module.exports = router;

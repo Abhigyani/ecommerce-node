@@ -55,9 +55,7 @@ class Product {
      */
     static findById(productId, callback) {
         getProductsFromFile((products) => {
-           const product =  products.find(product => {
-                return product.id === productId;
-            });
+           const product =  products.find(product => product.id === productId);
             callback(product);
         })
     }

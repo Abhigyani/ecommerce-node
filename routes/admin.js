@@ -18,6 +18,6 @@ const router = new Router();
 router.get('/add-product', adminController.getAddProduct);
 router.post('/add-product', adminController.postAddProduct);
 router.get('/products', adminController.getAdminProductList);
-router.get('/edit-product', adminController.getEditProduct);
+router.get('/edit-product/:productId', adminController.getEditProduct);
 
 module.exports = router;
