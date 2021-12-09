@@ -52,26 +52,37 @@ exports.postAddProduct = (req, res, next) => {
 exports.getEditProduct = (req, res, next) => {
     const editMode = (req.query.edit) === 'true' ? true : false;
     const productId = req.params.productId;
-    Product.findById(productId, (product) => {
-        if (!product) {
+    Product.fetchById(productId).then((result) => {
+        const product = result[0][0];
+        if(!product) {
             return res.redirect('/');
         }
+        console.log('GET EDIT PRODUCT : ', product);
         res.render('admin/edit-product', {
             pageTitle: 'Edit Product',
             path: '/admin/edit-product',
             editing: editMode,
             product: product
-        });
+        })
+    }).catch((error) => {
+        throw `Error while fetching product by id in get edit products ${error}`;
     });
 }
 
-
 exports.postEditProduct = (req, res, next) => {
-    const productId = req.params.productId
-    const {title, price, description} = req.body;
-    const product = new Product(productId, title, price, description);
-    product.save();
-    res.redirect('/admin/products');
+    const product = {
+        id: req.params.productId,
+        title: req.body.title,
+        price: req.body.price,
+        description: req.body.description,
+        imageUrl: req.body.imageUrl
+    }
+    
+    Product.updateById(product).then(() => {
+        res.redirect('/admin/products');
+    }).catch((error) => {
+        throw `Error while updating product by id in post edit product ${error}`;
+    });
 }
 
 exports.postDeleteProduct = (req, res, next) => {
@@ -80,7 +91,6 @@ exports.postDeleteProduct = (req, res, next) => {
     res.redirect('/admin/products');
 }
 
-
 /**
  * Admin product list middlware.
  * @param {*} req 
@@ -88,7 +98,8 @@ exports.postDeleteProduct = (req, res, next) => {
  * @param {*} next 
  */
  exports.getAdminProductList = (req, res, next) => {
-    Product.fetchAll((products) => {
+    Product.fetchAll().then((result) => {
+        const products = result[0];
         return res.render('admin/products',
             {
                 products: products,
@@ -99,5 +110,7 @@ exports.postDeleteProduct = (req, res, next) => {
                 productCSS: true,
                 activeAddProduct: true
             });
+    }).catch((error) => {
+        throw `Error while fetching product for admin products page ${error}`;
     });
 }

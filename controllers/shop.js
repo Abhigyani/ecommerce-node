@@ -20,17 +20,19 @@ exports.getProducts = (req, res, next) => {
      * 
      * Render function is passed in a callback to handle rendering of template on async data load.
      */
-    Product.fetchAll((products) => {
-        return res.render('shop/product-list',
-            {
-                products: products,
+    Product.fetchAll().then((result) => {
+        const products = result[0];
+        return res.render('shop/product-list', {
+            products: products,
                 pageTitle: 'All Products',
                 path: '/products',
                 hasProducts: products.length > 0,
                 mainCSS: true,
                 productCSS: true,
                 activeShop: true
-            });
+        })
+    }).catch((error) => {
+        throw `Error which fetching all the products for products page ${error}`;
     });
 
     /**
@@ -40,17 +42,19 @@ exports.getProducts = (req, res, next) => {
 }
 
 exports.getIndex = (req, res, next) => {
-    Product.fetchAll((products) => {
-        return res.render('shop/index',
-            {
-                products: products,
-                pageTitle: 'Shop',
-                path: '/',
-                hasProducts: products.length > 0,
-                mainCSS: true,
-                productCSS: true,
-                activeShop: true
-            });
+    Product.fetchAll().then((result) => {
+        const products = result[0];
+        return res.render('shop/index', {
+            products: products,
+            pageTitle: 'Shop',
+            hasProducts: products.length > 0,
+            mainCss: true,
+            productCss: true,
+            activeShop: true,
+            path: '/'
+        })
+    }).catch((error) => {
+        throw `Error while fetching product in index page ${error}`;
     });
 }
 
@@ -63,18 +67,22 @@ exports.getOrders = (req, res, next) => {
 
 exports.getProductDetails = (req, res, next) => {
     const productId = req.params.productId;
-    Product.findById(productId, (product) => {
-        res.render('shop/product-detail', {
+    Product.fetchById(productId).then((result) => {
+        const product = result[0][0];
+        res.render('shop/product-details', {
             pageTitle: 'Product Details',
             path: '/products',
             product: product
         })
+    }).catch((error) => {
+        throw `Error while fetching product by id in get product details ${error}`;
     });
 }
 
 exports.getCart = (req, res, next) => {
     Cart.getCart((cart) => {
-        Product.fetchAll((products) => {
+        Product.fetchAll().then((result) => {
+            const products = result[0];
             const cartProducts = [];
             for(product of products) {
                 const cartProductData = cart.products.find(prod => prod.id === product.id);
@@ -88,15 +96,20 @@ exports.getCart = (req, res, next) => {
                 path: '/cart',
                 products: cartProducts
             })
-        })
+        }).catch((error) => {
+            throw `Error while fetching products for carts page ${error}`;
+        });
     });
 }
 
 exports.postCart = (req, res, next) => {
     const productId = req.body.productId;
-    Product.findById(productId, (product) => {
+    Product.fetchById(productId).then((result) => {
+        const product = result[0][0];
         Cart.addToCart(productId, product.price);
         res.redirect('/cart');
+    }).catch((error) => {
+        throw `Error while fetching product by id in post cart ${error}`;
     })
 }
 

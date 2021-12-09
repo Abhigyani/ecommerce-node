@@ -17,6 +17,8 @@ const adminData = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const rootDir = require('./utils/path');
 const errorHandler = require('./controllers/errorHandler');
+const { mongoConnect } = require('./utils/database');
+const sqlDb = require('./utils/sqldatabase');
 
 /**
  * Created an instance of express.
@@ -62,7 +64,6 @@ const app = express();
  */
 app.set('view engine', 'ejs');
 app.set('views', path.join(rootDir, 'views', 'ejs'));
-
 
 /**
  * Invoked the node server.
@@ -159,3 +160,4 @@ app.use(errorHandler.handle404);
 //      */
 //     res.send('<h1>Hello World!</h1>');
 // })
+
