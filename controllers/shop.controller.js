@@ -20,20 +20,20 @@ exports.getProducts = (req, res, next) => {
      * 
      * Render function is passed in a callback to handle rendering of template on async data load.
      */
-    Product.fetchAll().then((result) => {
-        const products = result[0];
+    Product.findAll().then((products) => {
         return res.render('shop/product-list', {
             products: products,
-                pageTitle: 'All Products',
-                path: '/products',
-                hasProducts: products.length > 0,
-                mainCSS: true,
-                productCSS: true,
-                activeShop: true
+            pageTitle: 'Shop',
+            hasProducts: products.length > 0,
+            mainCss: true,
+            productCss: true,
+            activeShop: true,
+            path: '/'
         })
     }).catch((error) => {
         throw `Error which fetching all the products for products page ${error}`;
-    });
+
+    })
 
     /**
      * Response to render static HTML file.
@@ -41,9 +41,14 @@ exports.getProducts = (req, res, next) => {
     // res.sendFile(path.join(rootDir, 'views', 'html', 'shop.html'));
 }
 
+/**
+ * Middleware to render the index page.
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 exports.getIndex = (req, res, next) => {
-    Product.fetchAll().then((result) => {
-        const products = result[0];
+    Product.findAll().then((products) => {
         return res.render('shop/index', {
             products: products,
             pageTitle: 'Shop',
@@ -55,7 +60,7 @@ exports.getIndex = (req, res, next) => {
         })
     }).catch((error) => {
         throw `Error while fetching product in index page ${error}`;
-    });
+    })
 }
 
 exports.getOrders = (req, res, next) => {
@@ -67,9 +72,8 @@ exports.getOrders = (req, res, next) => {
 
 exports.getProductDetails = (req, res, next) => {
     const productId = req.params.productId;
-    Product.fetchById(productId).then((result) => {
-        const product = result[0][0];
-        res.render('shop/product-details', {
+    Product.findByPk(productId).then((product) => {
+        res.render('shop/product-detail', {
             pageTitle: 'Product Details',
             path: '/products',
             product: product
@@ -81,13 +85,12 @@ exports.getProductDetails = (req, res, next) => {
 
 exports.getCart = (req, res, next) => {
     Cart.getCart((cart) => {
-        Product.fetchAll().then((result) => {
-            const products = result[0];
+        Product.findAll().then((products) => {
             const cartProducts = [];
-            for(product of products) {
+            for (product of products) {
                 const cartProductData = cart.products.find(prod => prod.id === product.id);
-                if(cartProductData) {
-                    cartProducts.push({productData: product, qty: cartProductData.qty});
+                if (cartProductData) {
+                    cartProducts.push({ productData: product, qty: cartProductData.qty });
                 }
             }
 
@@ -104,13 +107,12 @@ exports.getCart = (req, res, next) => {
 
 exports.postCart = (req, res, next) => {
     const productId = req.body.productId;
-    Product.fetchById(productId).then((result) => {
-        const product = result[0][0];
+    Product.findByPk(productId).then((product) => {
         Cart.addToCart(productId, product.price);
         res.redirect('/cart');
     }).catch((error) => {
         throw `Error while fetching product by id in post cart ${error}`;
-    })
+    });
 }
 
 exports.postDeleteCartItem = (req, res, next) => {

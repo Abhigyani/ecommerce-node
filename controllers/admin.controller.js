@@ -1,17 +1,17 @@
 /**
  * Local modules import.
  */
- const rootDir = require('../utils/path');
- const Product = require('../models/product.model');
+const rootDir = require('../utils/path');
+const Product = require('../models/product.model');
 
- 
+
 /**
  * Middleware to load Add Product page.
  * @param {*} req 
  * @param {*} res 
  * @param {*} next 
  */
- exports.getAddProduct = (req, res, next) => {
+exports.getAddProduct = (req, res, next) => {
 
     /**
      * Response to render static HTML file.
@@ -42,22 +42,26 @@
  * @param {*} next 
  */
 exports.postAddProduct = (req, res, next) => {
-    const {title, price, description} = req.body;
-    const product = new Product(null, title, price, description);
-    product.save();
-    res.redirect('/admin/add-product');
+    const { title, price, description, imageUrl } = req.body;
+    Product.create({
+        title: title,
+        price: price,
+        description: description
+    }).then(() => {
+        res.redirect('/admin/products');
+    }).catch((error) => {
+        console.log('Error while post add product: ', error);
+    })
 }
 
 
 exports.getEditProduct = (req, res, next) => {
     const editMode = (req.query.edit) === 'true' ? true : false;
     const productId = req.params.productId;
-    Product.fetchById(productId).then((result) => {
-        const product = result[0][0];
-        if(!product) {
+    Product.findByPk(productId).then((product) => {
+        if (!product) {
             return res.redirect('/');
         }
-        console.log('GET EDIT PRODUCT : ', product);
         res.render('admin/edit-product', {
             pageTitle: 'Edit Product',
             path: '/admin/edit-product',
@@ -70,15 +74,14 @@ exports.getEditProduct = (req, res, next) => {
 }
 
 exports.postEditProduct = (req, res, next) => {
-    const product = {
-        id: req.params.productId,
-        title: req.body.title,
-        price: req.body.price,
-        description: req.body.description,
-        imageUrl: req.body.imageUrl
-    }
-    
-    Product.updateById(product).then(() => {
+    Product.findByPk(req.params.productId).then((product) => {
+        product.title = req.body.title;
+        product.price = req.body.price;
+        product.description = req.body.description;
+        product.imageUrl = req.body.imageUrl;
+        return product.save();
+    }).then((result) => {
+        console.log('Post edit product successful: ', result);
         res.redirect('/admin/products');
     }).catch((error) => {
         throw `Error while updating product by id in post edit product ${error}`;
@@ -87,8 +90,14 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
     const productId = req.params.productId;
-    Product.deleteById(productId);
-    res.redirect('/admin/products');
+    Product.findByPk(productId).then((product) => {
+        return product.destroy();
+    }).then(() => {
+        console.log('Product deleted');
+        res.redirect('/admin/products');
+    }).catch((error) => {
+        throw `Error while deleting product ${error}`;
+    });
 }
 
 /**
@@ -97,9 +106,8 @@ exports.postDeleteProduct = (req, res, next) => {
  * @param {*} res 
  * @param {*} next 
  */
- exports.getAdminProductList = (req, res, next) => {
-    Product.fetchAll().then((result) => {
-        const products = result[0];
+exports.getAdminProductList = (req, res, next) => {
+    Product.findAll().then((products) => {
         return res.render('admin/products',
             {
                 products: products,

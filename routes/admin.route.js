@@ -11,7 +11,7 @@ const { Router } = require('express');
 /**
  * Local module imports.
  */
-const adminController = require('../controllers/admin');
+const adminController = require('../controllers/admin.controller');
 
 const router = new Router();
 

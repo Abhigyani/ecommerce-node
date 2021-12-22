@@ -11,7 +11,7 @@ const path = require('path');
 /**
  * Local module imports.
  */
-const shopController = require('../controllers/shop');
+const shopController = require('../controllers/shop.controller');
 
 const router = new Router();
 

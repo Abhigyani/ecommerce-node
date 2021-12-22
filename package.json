@@ -17,7 +17,8 @@
     "material-icons": "^1.10.2",
     "mongodb": "^4.2.0",
     "mysql2": "^2.3.3",
-    "pug": "^3.0.2"
+    "pug": "^3.0.2",
+    "sequelize": "^5.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.14"
